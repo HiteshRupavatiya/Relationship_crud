@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,11 +11,11 @@ class VoteController extends Controller
 {
     public function list()
     {
-        $votes = Vote::with('user')->get();
+        $votes = User::with('votes')->get();
         return response()->json([
             'status'  => true,
             'message' => 'Votes Fetched Successfully',
-            'Votes'   => $votes
+            'user'    => $votes
         ]);
     }
 
@@ -43,7 +44,7 @@ class VoteController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Votes Created Successfully',
-            'Vote'   => $vote
+            'vote'    => $vote
         ]);
     }
 
