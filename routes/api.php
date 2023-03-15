@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\DriverController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
+use App\Http\Controllers\PassengerController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-    /*
+/*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
@@ -29,7 +32,7 @@ Route::controller(VoteController::class)->prefix('vote')->group(function () {
     Route::delete('delete/{id}', 'delete')->name('vote.delete');
 });
 
-Route::controller(LinkListController::class)->prefix('link-list')->group(function(){
+Route::controller(LinkListController::class)->prefix('link-list')->group(function () {
     Route::get('list', 'list')->name('link-list.list');
     Route::post('create', 'create')->name('link-list.create');
     Route::get('get/{id}', 'get')->name('link-list.get');
@@ -37,10 +40,34 @@ Route::controller(LinkListController::class)->prefix('link-list')->group(functio
     Route::delete('delete/{id}', 'delete')->name('link-list.delete');
 });
 
-Route::controller(LinkController::class)->prefix('link')->group(function(){
+Route::controller(LinkController::class)->prefix('link')->group(function () {
     Route::get('list', 'list')->name('link.list');
     Route::post('create', 'create')->name('link.create');
     Route::get('get/{id}', 'get')->name('link.get');
     Route::put('update/{id}', 'update')->name('link.update');
     Route::delete('delete/{id}', 'delete')->name('link.delete');
+});
+
+Route::controller(PassengerController::class)->prefix('passenger')->group(function () {
+    Route::get('list', 'list')->name('passenger.list');
+    Route::post('create', 'create')->name('passenger.create');
+    Route::get('get/{id}', 'get')->name('passenger.get');
+    Route::put('update/{id}', 'update')->name('passenger.update');
+    Route::delete('delete/{id}', 'delete')->name('passenger.delete');
+});
+
+Route::controller(VehicleController::class)->prefix('vehicle')->group(function () {
+    Route::get('list', 'list')->name('vehicle.list');
+    Route::post('create', 'create')->name('vehicle.create');
+    Route::get('get/{id}', 'get')->name('vehicle.get');
+    Route::put('update/{id}', 'update')->name('vehicle.update');
+    Route::delete('delete/{id}', 'delete')->name('vehicle.delete');
+});
+
+Route::controller(DriverController::class)->prefix('driver')->group(function () {
+    Route::get('list', 'list')->name('driver.list');
+    Route::post('create', 'create')->name('driver.create');
+    Route::get('get/{id}', 'get')->name('driver.get');
+    Route::put('update/{id}', 'update')->name('driver.update');
+    Route::delete('delete/{id}', 'delete')->name('driver.delete');
 });
