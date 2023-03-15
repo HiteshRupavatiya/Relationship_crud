@@ -1,8 +1,10 @@
-    <?php
+<?php
 
-    use App\Http\Controllers\VoteController;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LinkController;
+use App\Http\Controllers\LinkListController;
+use App\Http\Controllers\VoteController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
     /*
 |--------------------------------------------------------------------------
@@ -25,4 +27,20 @@ Route::controller(VoteController::class)->prefix('vote')->group(function () {
     Route::get('get/{id}', 'get')->name('vote.get');
     Route::put('update/{id}', 'update')->name('vote.update');
     Route::delete('delete/{id}', 'delete')->name('vote.delete');
+});
+
+Route::controller(LinkListController::class)->prefix('link-list')->group(function(){
+    Route::get('list', 'list')->name('link-list.list');
+    Route::post('create', 'create')->name('link-list.create');
+    Route::get('get/{id}', 'get')->name('link-list.get');
+    Route::put('update/{id}', 'update')->name('link-list.update');
+    Route::delete('delete/{id}', 'delete')->name('link-list.delete');
+});
+
+Route::controller(LinkController::class)->prefix('link')->group(function(){
+    Route::get('list', 'list')->name('link.list');
+    Route::post('create', 'create')->name('link.create');
+    Route::get('get/{id}', 'get')->name('link.get');
+    Route::put('update/{id}', 'update')->name('link.update');
+    Route::delete('delete/{id}', 'delete')->name('link.delete');
 });
