@@ -94,7 +94,7 @@ class VoteController extends Controller
             $vote->delete();
             return response()->json([
                 'status'  => true,
-                'message' => 'Votes Deleted Successfully'
+                'message' => 'Vote Deleted Successfully'
             ]);
         }
     }
