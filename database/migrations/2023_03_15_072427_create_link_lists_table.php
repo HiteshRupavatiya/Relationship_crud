@@ -15,7 +15,11 @@ return new class extends Migration
     {
         Schema::create('link_lists', function (Blueprint $table) {
             $table->id();
+            $table->string('title')->unique();
+            $table->string('slug')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
