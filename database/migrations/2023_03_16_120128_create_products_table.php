@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('product_name')->unique()->nullable(false);
             $table->float('price')->nullable(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

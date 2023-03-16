@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'product_name',
+        'price'
+    ];
+
+    public function images()
+    {
+        return $this->morphMany(Profile::class, 'profileable');
+    }
 }

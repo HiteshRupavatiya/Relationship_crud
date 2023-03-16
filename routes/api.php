@@ -4,6 +4,7 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
 use App\Http\Controllers\PassengerController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
@@ -121,7 +122,16 @@ Route::controller(RoleUserController::class)->prefix('role-user')->group(functio
 Route::controller(ProfileController::class)->prefix('profile')->group(function () {
     Route::get('list', 'list')->name('profile.list');
     Route::post('create', 'create')->name('profile.create');
+    Route::post('create-product-image', 'storeProductImage')->name('profile.create-product');
     Route::get('get/{id}', 'get')->name('profile.get');
     Route::put('update/{id}', 'update')->name('profile.update');
     Route::delete('delete/{id}', 'delete')->name('profile.delete');
+});
+
+Route::controller(ProductController::class)->prefix('product')->group(function () {
+    Route::get('list', 'list')->name('product.list');
+    Route::post('create', 'create')->name('product.create');
+    Route::get('get/{id}', 'get')->name('product.get');
+    Route::put('update/{id}', 'update')->name('product.update');
+    Route::delete('delete/{id}', 'delete')->name('product.delete');
 });
