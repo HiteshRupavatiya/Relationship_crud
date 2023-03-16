@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('standards', function (Blueprint $table) {
             $table->id();
-            $table->string('standard_name')->unique()->nullable(false);
+            $table->string('standard_name')->nullable(false);
             $table->foreignId('school_id')->constrained('schools')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
