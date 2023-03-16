@@ -66,7 +66,7 @@ class ProfileController extends Controller
     {
         $validateProfile = Validator::make($request->all(), [
             'image_path'       => 'required|string|max:100',
-            'profileable_id'   => 'required|exists:profiles,profileable_id',
+            'profileable_id'   => 'required|exists:profiles,id',
         ]);
 
         if ($validateProfile->fails()) {
