@@ -4,6 +4,9 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
 use App\Http\Controllers\PassengerController;
+use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\StandardController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
@@ -70,4 +73,28 @@ Route::controller(DriverController::class)->prefix('driver')->group(function () 
     Route::get('get/{id}', 'get')->name('driver.get');
     Route::put('update/{id}', 'update')->name('driver.update');
     Route::delete('delete/{id}', 'delete')->name('driver.delete');
+});
+
+Route::controller(SchoolController::class)->prefix('school')->group(function () {
+    Route::get('list', 'list')->name('school.list');
+    Route::post('create', 'create')->name('school.create');
+    Route::get('get/{id}', 'get')->name('school.get');
+    Route::put('update/{id}', 'update')->name('school.update');
+    Route::delete('delete/{id}', 'delete')->name('school.delete');
+});
+
+Route::controller(StandardController::class)->prefix('standard')->group(function () {
+    Route::get('list', 'list')->name('standard.list');
+    Route::post('create', 'create')->name('standard.create');
+    Route::get('get/{id}', 'get')->name('standard.get');
+    Route::put('update/{id}', 'update')->name('standard.update');
+    Route::delete('delete/{id}', 'delete')->name('standard.delete');
+});
+
+Route::controller(StudentController::class)->prefix('student')->group(function () {
+    Route::get('list', 'list')->name('student.list');
+    Route::post('create', 'create')->name('student.create');
+    Route::get('get/{id}', 'get')->name('student.get');
+    Route::put('update/{id}', 'update')->name('student.update');
+    Route::delete('delete/{id}', 'delete')->name('student.delete');
 });
