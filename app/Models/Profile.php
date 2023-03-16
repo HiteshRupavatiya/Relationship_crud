@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Profile extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'image_path'
+    ];
+
+    public function profileable()
+    {
+        return $this->morphTo();
+    }
 }

@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'role_users');
     }
+
+    public function profile()
+    {
+        return $this->morphOne(Profile::class, 'profileable');
+    }
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
 use App\Http\Controllers\PassengerController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SchoolController;
@@ -115,4 +116,12 @@ Route::controller(RoleUserController::class)->prefix('role-user')->group(functio
     Route::get('get/{id}', 'get')->name('role-user.get');
     Route::put('update/{id}', 'update')->name('role-user.update');
     Route::delete('delete/{id}', 'delete')->name('role-user.delete');
+});
+
+Route::controller(ProfileController::class)->prefix('profile')->group(function () {
+    Route::get('list', 'list')->name('profile.list');
+    Route::post('create', 'create')->name('profile.create');
+    Route::get('get/{id}', 'get')->name('profile.get');
+    Route::put('update/{id}', 'update')->name('profile.update');
+    Route::delete('delete/{id}', 'delete')->name('profile.delete');
 });
