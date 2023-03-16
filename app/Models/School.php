@@ -13,7 +13,7 @@ class School extends Model
         'school_name',
     ];
 
-    public function schools()
+    public function students()
     {
         return $this->hasManyThrough(Student::class, Standard::class);
     }
