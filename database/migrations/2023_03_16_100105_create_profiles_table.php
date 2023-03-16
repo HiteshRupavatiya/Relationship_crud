@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
+            $table->string('image_path');
+            $table->integer('profileable');
+            $table->string('profileable_type');
             $table->timestamps();
         });
     }
