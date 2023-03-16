@@ -4,6 +4,8 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
 use App\Http\Controllers\PassengerController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\StudentController;
@@ -97,4 +99,20 @@ Route::controller(StudentController::class)->prefix('student')->group(function (
     Route::get('get/{id}', 'get')->name('student.get');
     Route::put('update/{id}', 'update')->name('student.update');
     Route::delete('delete/{id}', 'delete')->name('student.delete');
+});
+
+Route::controller(RoleController::class)->prefix('role')->group(function () {
+    Route::get('list', 'list')->name('role.list');
+    Route::post('create', 'create')->name('role.create');
+    Route::get('get/{id}', 'get')->name('role.get');
+    Route::put('update/{id}', 'update')->name('role.update');
+    Route::delete('delete/{id}', 'delete')->name('role.delete');
+});
+
+Route::controller(RoleUserController::class)->prefix('role-user')->group(function () {
+    Route::get('list', 'list')->name('role-user.list');
+    Route::post('create', 'create')->name('role-user.create');
+    Route::get('get/{id}', 'get')->name('role-user.get');
+    Route::put('update/{id}', 'update')->name('role-user.update');
+    Route::delete('delete/{id}', 'delete')->name('role-user.delete');
 });
