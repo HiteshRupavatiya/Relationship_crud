@@ -25,7 +25,8 @@ class ProductController extends Controller
     {
         $validateProduct = Validator::make($request->all(), [
             'product_name' => 'required|string|max:40|unique:products,product_name',
-            'price'        => 'required|numeric|min:1'
+            'price'        => 'required|numeric|min:1',
+            'image_path'   => 'required|array|max:100'
         ]);
 
         if ($validateProduct->fails()) {
@@ -38,6 +39,12 @@ class ProductController extends Controller
                 'price'
             ]
         ));
+
+        foreach ($request->image_path as $image) {
+            $profile = new Profile;
+            $profile->image_path = $image;
+            $product->images()->save($profile);
+        }
 
         return $this->Success('Product Created Successfully', $product);
     }
@@ -55,7 +62,9 @@ class ProductController extends Controller
     {
         $validateProduct = Validator::make($request->all(), [
             'product_name' => 'required|string|max:40|unique:products,product_name',
-            'price'        => 'required|numeric|min:1'
+            'price'        => 'required|numeric|min:1',
+            'id'           => 'required|exists:profiles,id',
+            'image_path'   => 'required|max:100'
         ]);
 
         if ($validateProduct->fails()) {
@@ -72,6 +81,15 @@ class ProductController extends Controller
                 ]
             ));
 
+            $product->images()->updateOrCreate(
+                [
+                    'id' => $request->id
+                ],
+                [
+                    'image_path' => $request->image_path
+                ]
+            );
+
             return $this->Success('Product Updated Successfully');
         }
         return $this->DataNotFound();
@@ -81,31 +99,9 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if ($product) {
-            $product->delete();
+            $product->with('images')->delete();
             return $this->Success('Product Deleted Successfully');
         }
         return $this->DataNotFound();
-    }
-
-    public function storeProductImage(Request $request)
-    {
-        $validateProductImage = Validator::make($request->all(), [
-            'image_path'       => 'required|string|max:100',
-            'profileable_id'   => 'required|exists:products,id',
-        ]);
-
-        if ($validateProductImage->fails()) {
-            return $this->ErrorResponse($validateProductImage);
-        }
-
-        $product = Product::find($request->profileable_id);
-
-        $profile = new Profile;
-
-        $profile->image_path = $request->image_path;
-
-        $product->images()->save($profile);
-
-        return $this->Success('Product Image Created Successfully', $profile);
     }
 }
