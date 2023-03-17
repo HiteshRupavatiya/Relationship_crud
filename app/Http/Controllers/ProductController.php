@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -99,5 +100,35 @@ class ProductController extends Controller
                 'message' => 'Product Deleted Successfully',
             ]);
         }
+    }
+
+    public function storeProductImage(Request $request)
+    {
+        $validateProductImage = Validator::make($request->all(), [
+            'image_path'       => 'required|string|max:100',
+            'profileable_id'   => 'required|exists:products,id',
+        ]);
+
+        if ($validateProductImage->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validation Errors',
+                'errors'  => $validateProductImage->errors()
+            ]);
+        }
+
+        $product = Product::findOrFail($request->profileable_id);
+
+        $profile = new Profile;
+
+        $profile->image_path = $request->image_path;
+
+        $product->images()->save($profile);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Product Image Created Successfully',
+            'profile' => $profile
+        ]);
     }
 }
