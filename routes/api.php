@@ -11,6 +11,7 @@ use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
@@ -119,7 +120,7 @@ Route::controller(RoleUserController::class)->prefix('role-user')->group(functio
     Route::delete('delete/{id}', 'delete')->name('role-user.delete');
 });
 
-Route::controller(ProfileController::class)->prefix('profile')->group(function () {
+Route::controller(UserController::class)->prefix('profile')->group(function () {
     Route::get('list', 'list')->name('profile.list');
     Route::post('create', 'create')->name('profile.create');
     Route::post('create-product-image', 'storeProductImage')->name('profile.create-product');
