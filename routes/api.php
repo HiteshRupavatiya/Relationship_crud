@@ -5,7 +5,6 @@ use App\Http\Controllers\LinkController;
 use App\Http\Controllers\LinkListController;
 use App\Http\Controllers\PassengerController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SchoolController;
