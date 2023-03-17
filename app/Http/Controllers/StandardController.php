@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Standard;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class StandardController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $standards = Standard::with('school', 'students')->get();
-        return response()->json([
-            'status'    => true,
-            'message'   => 'Standards Fetched Successfully',
-            'standards' => $standards
-        ]);
+        if ($standards) {
+            return $this->Success('Standards Fetched Successfully', $standards);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -40,23 +42,16 @@ class StandardController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'   => true,
-            'message'  => 'Standard Created Successfully',
-            'standard' => $standard
-        ]);
+        return $this->Success('Standard Created Successfully', $standard);
     }
 
     public function get($id)
     {
-        $standard = Standard::findOrFail($id);
+        $standard = Standard::find($id);
         if ($standard) {
-            return response()->json([
-                'status'   => true,
-                'message'  => 'Standard Fetched Successfully',
-                'standard' => $standard
-            ]);
+            return $this->Success('Standard Fetched Successfully', $standard);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -66,36 +61,30 @@ class StandardController extends Controller
         ]);
 
         if ($validateStandard->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateStandard->errors()
-            ]);
+            return $this->ErrorResponse($validateStandard);
         }
 
-        $standard = Standard::findOrFail($id);
+        $standard = Standard::find($id);
 
-        $standard->update($request->only(
-            [
-                'standard_name',
-            ]
-        ));
+        if ($standard) {
+            $standard->update($request->only(
+                [
+                    'standard_name',
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Standard Updated Successfully'
-        ]);
+            return $this->Success('Standard Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $standard = Standard::findOrFail($id);
+        $standard = Standard::find($id);
         if ($standard) {
             $standard->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Standard Deleted Successfully'
-            ]);
+            return $this->Success('Standard Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

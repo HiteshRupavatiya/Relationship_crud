@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Vote;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class VoteController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $votes = User::with('votes')->get();
-        return response()->json([
-            'status'  => true,
-            'message' => 'Votes Fetched Successfully',
-            'user'    => $votes
-        ]);
+        if ($votes) {
+            return $this->Success('Votes Fetched Successfully', $votes);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -27,11 +29,7 @@ class VoteController extends Controller
         ]);
 
         if ($validateVote->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateVote->errors()
-            ]);
+            return $this->ErrorResponse($validateVote);
         }
 
         $vote = Vote::create($request->only(
@@ -41,23 +39,16 @@ class VoteController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Votes Created Successfully',
-            'vote'    => $vote
-        ]);
+        return $this->Success('Votes Created Successfully', $vote);
     }
 
     public function get($id)
     {
-        $vote = Vote::findOrFail($id);
+        $vote = Vote::find($id);
         if ($vote) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Vote Fetched Successfully',
-                'Vote'    => $vote
-            ]);
+            return $this->Success('Vote Fetched Successfully', $vote);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -67,36 +58,30 @@ class VoteController extends Controller
         ]);
 
         if ($validateVote->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateVote->errors()
-            ]);
+            return $this->ErrorResponse($validateVote);
         }
 
-        $vote = Vote::findOrFail($id);
+        $vote = Vote::find($id);
 
-        $vote->update($request->only(
-            [
-                'name',
-            ]
-        ));
+        if ($vote) {
+            $vote->update($request->only(
+                [
+                    'name',
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Votes Updated Successfully'
-        ]);
+            return $this->Success('Votes Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $vote = Vote::findOrFail($id);
+        $vote = Vote::find($id);
         if ($vote) {
             $vote->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Vote Deleted Successfully'
-            ]);
+            return $this->Success('Vote Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

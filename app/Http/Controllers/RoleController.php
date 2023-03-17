@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class RoleController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $roles = Role::with('user')->get();
-        return response()->json([
-            'status'  => true,
-            'message' => 'Roles Fetched Successfully',
-            'roles'   => $roles
-        ]);
+        if ($roles) {
+            return $this->Success('Roles Fetched Successfully', $roles);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -26,11 +28,7 @@ class RoleController extends Controller
         ]);
 
         if ($validateRole->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateRole->errors()
-            ]);
+            return $this->ErrorResponse($validateRole);
         }
 
         $role = Role::create($request->only(
@@ -39,23 +37,16 @@ class RoleController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Role Created Successfully',
-            'role'    => $role
-        ]);
+        return $this->Success('Role Created Successfully', $role);
     }
 
     public function get($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
         if ($role) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Role Fetched Successfully',
-                'role'    => $role
-            ]);
+            return $this->Success('Role Fetched Successfully', $role);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -65,36 +56,30 @@ class RoleController extends Controller
         ]);
 
         if ($validateRole->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateRole->errors()
-            ]);
+            return $this->ErrorResponse($validateRole);
         }
 
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
 
-        $role->update($request->only(
-            [
-                'role_name',
-            ]
-        ));
+        if ($role) {
+            $role->update($request->only(
+                [
+                    'role_name',
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Role Updated Successfully'
-        ]);
+            return $this->Success('Role Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
         if ($role) {
             $role->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Role Deleted Successfully'
-            ]);
+            return $this->Success('Role Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

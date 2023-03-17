@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\RoleUser;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class RoleUserController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $roleUsers = RoleUser::with('user', 'role')->get();
-        return response()->json([
-            'status'     => true,
-            'message'    => 'Role Users Fetched Successfully',
-            'role_users' => $roleUsers
-        ]);
+        if ($roleUsers) {
+            return $this->Success('Role Users Fetched Successfully', $roleUsers);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -26,11 +28,7 @@ class RoleUserController extends Controller
         ]);
 
         if ($validateRoleUser->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateRoleUser->errors()
-            ]);
+            return $this->ErrorResponse($validateRoleUser);
         }
 
         $roleUser = RoleUser::create($request->only(
@@ -40,23 +38,16 @@ class RoleUserController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'    => true,
-            'message'   => 'Role User Created Successfully',
-            'role_user' => $roleUser
-        ]);
+        return $this->Success('Role User Created Successfully', $roleUser);
     }
 
     public function get($id)
     {
-        $roleUser = RoleUser::findOrFail($id);
+        $roleUser = RoleUser::find($id);
         if ($roleUser) {
-            return response()->json([
-                'status'    => true,
-                'message'   => 'Role User Fetched Successfully',
-                'role_user' => $roleUser
-            ]);
+            return $this->Success('Role User Fetched Successfully', $roleUser);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -67,37 +58,31 @@ class RoleUserController extends Controller
         ]);
 
         if ($validateRoleUser->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateRoleUser->errors()
-            ]);
+            return $this->ErrorResponse($validateRoleUser);
         }
 
-        $roleUser = RoleUser::findOrFail($id);
+        $roleUser = RoleUser::find($id);
 
-        $roleUser->update($request->only(
-            [
-                'role_id',
-                'user_id'
-            ]
-        ));
+        if ($roleUser) {
+            $roleUser->update($request->only(
+                [
+                    'role_id',
+                    'user_id'
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Role User Updated Successfully'
-        ]);
+            return $this->Success('Role User Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $roleUser = RoleUser::findOrFail($id);
+        $roleUser = RoleUser::find($id);
         if ($roleUser) {
             $roleUser->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Role User Deleted Successfully'
-            ]);
+            return $this->Success('Role User Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

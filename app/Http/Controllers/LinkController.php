@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Link;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LinkController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $links = Link::with('link_list')->get();
-        return response()->json([
-            'status'  => true,
-            'message' => 'Links Fetched Successfully',
-            'links'   => $links
-        ]);
+        if ($links) {
+            return $this->Success('Links Fetched Successfully', $links);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -27,11 +29,7 @@ class LinkController extends Controller
         ]);
 
         if ($validateLink->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateLink->errors()
-            ]);
+            return $this->ErrorResponse($validateLink);
         }
 
         $link = Link::create($request->only(
@@ -42,23 +40,16 @@ class LinkController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Link Created Successfully',
-            'link'    => $link
-        ]);
+        return $this->Success('Link Created Successfully', $link);
     }
 
     public function get($id)
     {
-        $link = Link::findOrFail($id);
+        $link = Link::find($id);
         if ($link) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Link Fetched Successfully',
-                'link'    => $link
-            ]);
+            return $this->Success('Link Fetched Successfully', $link);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -69,37 +60,31 @@ class LinkController extends Controller
         ]);
 
         if ($validateLink->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateLink->errors()
-            ]);
+            return $this->ErrorResponse($validateLink);
         }
 
-        $link = Link::findOrFail($id);
+        $link = Link::find($id);
 
-        $link->update($request->only(
-            [
-                'url',
-                'description'
-            ]
-        ));
+        if ($link) {
+            $link->update($request->only(
+                [
+                    'url',
+                    'description'
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Link Updated Successfully'
-        ]);
+            return $this->Success('Link Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $link = Link::findOrFail($id);
+        $link = Link::find($id);
         if ($link) {
             $link->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Link Deleted Successfully'
-            ]);
+            return $this->Success('Link Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

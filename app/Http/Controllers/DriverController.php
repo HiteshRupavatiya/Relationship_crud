@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Driver;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class DriverController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $drivers = Driver::with('vehicle')->get();
-        return response()->json([
-            'status'  => true,
-            'message' => 'Drivers Fetched Successfully',
-            'drivers' => $drivers
-        ]);
+        if ($drivers) {
+            return $this->Success('Drivers Fetched Successfully', $drivers);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -26,11 +28,7 @@ class DriverController extends Controller
         ]);
 
         if ($validateDriver->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateDriver->errors()
-            ]);
+            return $this->ErrorResponse($validateDriver);
         }
 
         $driver = Driver::create($request->only(
@@ -40,23 +38,16 @@ class DriverController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Driver Created Successfully',
-            'driver'  => $driver
-        ]);
+        return $this->Success('Driver Created Successfully', $driver);
     }
 
     public function get($id)
     {
-        $driver = Driver::findOrFail($id);
+        $driver = Driver::find($id);
         if ($driver) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Driver Fetched Successfully',
-                'driver'  => $driver
-            ]);
+            return $this->Success('Driver Fetched Successfully', $driver);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -66,36 +57,29 @@ class DriverController extends Controller
         ]);
 
         if ($validateDriver->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateDriver->errors()
-            ]);
+            return $this->ErrorResponse($validateDriver);
         }
 
-        $driver = Driver::findOrFail($id);
+        $driver = Driver::find($id);
 
-        $driver->update($request->only(
-            [
-                'driver_name'
-            ]
-        ));
-
-        return response()->json([
-            'status'  => true,
-            'message' => 'Driver Updated Successfully'
-        ]);
+        if ($driver) {
+            $driver->update($request->only(
+                [
+                    'driver_name'
+                ]
+            ));
+            return $this->Success('Driver Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $driver = Driver::findOrFail($id);
+        $driver = Driver::find($id);
         if ($driver) {
             $driver->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Driver Deleted Successfully'
-            ]);
+            return $this->Success('Driver Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

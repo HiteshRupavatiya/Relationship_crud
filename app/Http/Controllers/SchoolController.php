@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class SchoolController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $schools = School::with('students', 'standards')->get();
-        return response()->json([
-            'status'  => true,
-            'message' => 'Schools Fetched Successfully',
-            'schools' => $schools
-        ]);
+        if ($schools) {
+            return $this->Success('Schools Fetched Successfully', $schools);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -25,11 +27,7 @@ class SchoolController extends Controller
         ]);
 
         if ($validateSchool->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateSchool->errors()
-            ]);
+            return $this->ErrorResponse($validateSchool);
         }
 
         $school = School::create($request->only(
@@ -38,23 +36,16 @@ class SchoolController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'School Created Successfully',
-            'school'  => $school
-        ]);
+        return $this->Success('School Created Successfully', $school);
     }
 
     public function get($id)
     {
-        $school = School::findOrFail($id);
+        $school = School::find($id);
         if ($school) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'School Fetched Successfully',
-                'school'  => $school
-            ]);
+            return $this->Success('School Fetched Successfully', $school);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -64,36 +55,30 @@ class SchoolController extends Controller
         ]);
 
         if ($validateSchool->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateSchool->errors()
-            ]);
+            return $this->ErrorResponse($validateSchool);
         }
 
-        $school = School::findOrFail($id);
+        $school = School::find($id);
 
-        $school->update($request->only(
-            [
-                'school_name',
-            ]
-        ));
+        if ($school) {
+            $school->update($request->only(
+                [
+                    'school_name',
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'School Updated Successfully'
-        ]);
+            return $this->Success('School Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $school = School::findOrFail($id);
+        $school = School::find($id);
         if ($school) {
             $school->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'School Deleted Successfully'
-            ]);
+            return $this->Success('School Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vehicle;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $vehicles = Vehicle::with('passenger', 'drivers')->get();
-        return response()->json([
-            'status'   => true,
-            'message'  => 'Vehicles Fetched Successfully',
-            'vehicles' => $vehicles
-        ]);
+        if ($vehicles) {
+            return $this->Success('Vehicles Fetched Successfully', $vehicles);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -26,11 +28,7 @@ class VehicleController extends Controller
         ]);
 
         if ($validateVehicle->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateVehicle->errors()
-            ]);
+            return $this->ErrorResponse($validateVehicle);
         }
 
         $vehicle = Vehicle::create($request->only(
@@ -40,23 +38,16 @@ class VehicleController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Vehicle Created Successfully',
-            'vehicle' => $vehicle
-        ]);
+        return $this->Success('Vehicle Created Successfully', $vehicle);
     }
 
     public function get($id)
     {
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle = Vehicle::find($id);
         if ($vehicle) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Vehicle Fetched Successfully',
-                'vehicle' => $vehicle
-            ]);
+            return $this->Success('Vehicle Fetched Successfully', $vehicle);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -66,36 +57,30 @@ class VehicleController extends Controller
         ]);
 
         if ($validateVehicle->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateVehicle->errors()
-            ]);
+            return $this->ErrorResponse($validateVehicle);
         }
 
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle = Vehicle::find($id);
 
-        $vehicle->update($request->only(
-            [
-                'vehicle_number'
-            ]
-        ));
+        if ($vehicle) {
+            $vehicle->update($request->only(
+                [
+                    'vehicle_number'
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Vehicle Updated Successfully'
-        ]);
+            return $this->Success('Vehicle Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $vehicle = Vehicle::findOrFail($id);
+        $vehicle = Vehicle::find($id);
         if ($vehicle) {
             $vehicle->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Vehicle Deleted Successfully'
-            ]);
+            return $this->Success('Vehicle Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

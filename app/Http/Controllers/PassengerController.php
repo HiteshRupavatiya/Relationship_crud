@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Passenger;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class PassengerController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $passengers = Passenger::with('drivers', 'vehicles')->get();
-        return response()->json([
-            'status'     => true,
-            'message'    => 'Passengers Fetched Successfully',
-            'passengers' => $passengers
-        ]);
+        if ($passengers) {
+            return $this->Success('Passengers Fetched Successfully', $passengers);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -25,11 +27,7 @@ class PassengerController extends Controller
         ]);
 
         if ($validatePassenger->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validatePassenger->errors()
-            ]);
+            return $this->ErrorResponse($validatePassenger);
         }
 
         $passenger = Passenger::create($request->only(
@@ -38,23 +36,16 @@ class PassengerController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'    => true,
-            'message'   => 'Passenger Created Successfully',
-            'passenger' => $passenger
-        ]);
+        return $this->Success('Passenger Created Successfully', $passenger);
     }
 
     public function get($id)
     {
-        $passenger = Passenger::findOrFail($id);
+        $passenger = Passenger::find($id);
         if ($passenger) {
-            return response()->json([
-                'status'    => true,
-                'message'   => 'Passenger Fetched Successfully',
-                'passenger' => $passenger
-            ]);
+            return $this->Success('Passenger Fetched Successfully', $passenger);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -64,36 +55,30 @@ class PassengerController extends Controller
         ]);
 
         if ($validatePassenger->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validatePassenger->errors()
-            ]);
+            return $this->ErrorResponse($validatePassenger);
         }
 
-        $passenger = Passenger::findOrFail($id);
+        $passenger = Passenger::find($id);
 
-        $passenger->update($request->only(
-            [
-                'name'
-            ]
-        ));
+        if ($passenger) {
+            $passenger->update($request->only(
+                [
+                    'name'
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Passenger Updated Successfully'
-        ]);
+            return $this->Success('Passenger Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $passenger = Passenger::findOrFail($id);
+        $passenger = Passenger::find($id);
         if ($passenger) {
             $passenger->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Passenger Deleted Successfully'
-            ]);
+            return $this->Success('Passenger Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

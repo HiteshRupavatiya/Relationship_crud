@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\LinkList;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LinkListController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $linkLists = LinkList::with('links')->get();
-        return response()->json([
-            'status'     => true,
-            'message'    => 'Link Lists Fetched Successfully',
-            'link_lists' => $linkLists
-        ]);
+        if ($linkLists) {
+            return $this->Success('Link Lists Fetched Successfully', $linkLists);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -27,11 +29,7 @@ class LinkListController extends Controller
         ]);
 
         if ($validateLinkList->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateLinkList->errors()
-            ]);
+            return $this->ErrorResponse($validateLinkList);
         }
 
         $linkList = LinkList::create($request->only(
@@ -42,23 +40,16 @@ class LinkListController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'    => true,
-            'message'   => 'Link List Created Successfully',
-            'link_list' => $linkList
-        ]);
+        return $this->Success('Link List Created Successfully', $linkList);
     }
 
     public function get($id)
     {
-        $linkList = LinkList::findOrFail($id);
+        $linkList = LinkList::find($id);
         if ($linkList) {
-            return response()->json([
-                'status'    => true,
-                'message'   => 'Link List Fetched Successfully',
-                'link_list' => $linkList
-            ]);
+            return $this->Success('Link List Fetched Successfully', $linkList);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -70,38 +61,32 @@ class LinkListController extends Controller
         ]);
 
         if ($validateLinkList->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Error',
-                'errors'  => $validateLinkList->errors()
-            ]);
+            return $this->ErrorResponse($validateLinkList);
         }
 
-        $linkList = LinkList::findOrFail($id);
+        $linkList = LinkList::find($id);
 
-        $linkList->update($request->only(
-            [
-                'title',
-                'slug',
-                'description'
-            ]
-        ));
+        if ($linkList) {
+            $linkList->update($request->only(
+                [
+                    'title',
+                    'slug',
+                    'description'
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Link List Updated Successfully'
-        ]);
+            return $this->Success('Link List Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $linkList = LinkList::findOrFail($id);
+        $linkList = LinkList::find($id);
         if ($linkList) {
             $linkList->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Link List Deleted Successfully'
-            ]);
+            return $this->Success('Link List Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

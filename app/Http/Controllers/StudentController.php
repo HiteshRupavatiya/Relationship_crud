@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $students = Student::with('standard')->get();
-        return response()->json([
-            'status'   => true,
-            'message'  => 'Students Fetched Successfully',
-            'students' => $students
-        ]);
+        if ($students) {
+            return $this->Success('Students Fetched Successfully', $students);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -26,11 +28,7 @@ class StudentController extends Controller
         ]);
 
         if ($validateStudent->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateStudent->errors()
-            ]);
+            return $this->ErrorResponse($validateStudent);
         }
 
         $student = Student::create($request->only(
@@ -40,23 +38,16 @@ class StudentController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Student Created Successfully',
-            'student' => $student
-        ]);
+        return $this->Success('Student Created Successfully', $student);
     }
 
     public function get($id)
     {
-        $student = Student::findOrFail($id);
+        $student = Student::find($id);
         if ($student) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Student Fetched Successfully',
-                'student' => $student
-            ]);
+            return $this->Success('Student Fetched Successfully', $student);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -66,36 +57,30 @@ class StudentController extends Controller
         ]);
 
         if ($validateStudent->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateStudent->errors()
-            ]);
+            return $this->ErrorResponse($validateStudent);
         }
 
-        $student = Student::findOrFail($id);
+        $student = Student::find($id);
 
-        $student->update($request->only(
-            [
-                'student_name',
-            ]
-        ));
+        if ($student) {
+            $student->update($request->only(
+                [
+                    'student_name',
+                ]
+            ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Student Updated Successfully'
-        ]);
+            return $this->Success('Student Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
     {
-        $student = Student::findOrFail($id);
+        $student = Student::find($id);
         if ($student) {
             $student->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Student Deleted Successfully'
-            ]);
+            return $this->Success('Student Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }

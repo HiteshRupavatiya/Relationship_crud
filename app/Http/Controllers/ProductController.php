@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Profile;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $products = Product::with('images')->has('images')->get();
-        return response()->json([
-            'status'   => true,
-            'message'  => 'Products Fetched Successfully',
-            'products' => $products
-        ]);
+        if ($products) {
+            return $this->Success('Products Fetched Successfully', $products);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -27,11 +29,7 @@ class ProductController extends Controller
         ]);
 
         if ($validateProduct->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateProduct->errors()
-            ]);
+            return $this->ErrorResponse($validateProduct);
         }
 
         $product = Product::create($request->only(
@@ -41,23 +39,16 @@ class ProductController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Product Created Successfully',
-            'product' => $product
-        ]);
+        return $this->Success('Product Created Successfully', $product);
     }
 
     public function get($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
         if ($product) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Product Fetched Successfully',
-                'product' => $product
-            ]);
+            return $this->Success('Product Fetched Successfully', $product);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request, $id)
@@ -68,14 +59,10 @@ class ProductController extends Controller
         ]);
 
         if ($validateProduct->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateProduct->errors()
-            ]);
+            return $this->ErrorResponse($validateProduct);
         }
 
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
 
         $product->update($request->only(
             [
@@ -84,22 +71,17 @@ class ProductController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Product Updated Successfully',
-        ]);
+        return $this->Success('Product Updated Successfully');
     }
 
     public function delete($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
         if ($product) {
             $product->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Product Deleted Successfully',
-            ]);
+            return $this->Success('Product Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 
     public function storeProductImage(Request $request)
@@ -110,14 +92,10 @@ class ProductController extends Controller
         ]);
 
         if ($validateProductImage->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateProductImage->errors()
-            ]);
+            return $this->ErrorResponse($validateProductImage);
         }
 
-        $product = Product::findOrFail($request->profileable_id);
+        $product = Product::find($request->profileable_id);
 
         $profile = new Profile;
 
@@ -125,10 +103,6 @@ class ProductController extends Controller
 
         $product->images()->save($profile);
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Product Image Created Successfully',
-            'profile' => $profile
-        ]);
+        return $this->Success('Product Image Created Successfully', $profile);
     }
 }

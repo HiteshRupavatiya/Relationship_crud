@@ -5,19 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Profile;
+use App\Traits\ResponceMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    use ResponceMessage;
+
     public function list()
     {
         $profiles = User::with('profile')->has('profile')->get();
-        return response()->json([
-            'status'   => true,
-            'message'  => 'Profiles Fetched Successfully',
-            'profiles' => $profiles
-        ]);
+        if ($profiles) {
+            return $this->Success('Profiles Fetched Successfully', $profiles);
+        }
+        return $this->DataNotFound();
     }
 
     public function create(Request $request)
@@ -28,14 +30,10 @@ class UserController extends Controller
         ]);
 
         if ($validateProfile->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateProfile->errors()
-            ]);
+            return $this->ErrorResponse($validateProfile);
         }
 
-        $user = User::findOrFail($request->profileable_id);
+        $user = User::find($request->profileable_id);
 
         $profile = new Profile;
 
@@ -43,23 +41,16 @@ class UserController extends Controller
 
         $user->profile()->save($profile);
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Profile Created Successfully',
-            'profile' => $profile
-        ]);
+        return $this->Success('Profile Created Successfully', $profile);
     }
 
     public function get($id)
     {
-        $profile = Profile::findOrFail($id);
+        $profile = Profile::find($id);
         if ($profile) {
-            return response()->json([
-                'status'  => true,
-                'message' => 'Profile Fetched Successfully',
-                'profile' => $profile
-            ]);
+            return $this->Success('Profile Fetched Successfully', $profile);
         }
+        return $this->DataNotFound();
     }
 
     public function update(Request $request)
@@ -70,14 +61,10 @@ class UserController extends Controller
         ]);
 
         if ($validateProfile->fails()) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Validation Errors',
-                'errors'  => $validateProfile->errors()
-            ]);
+            return $this->ErrorResponse($validateProfile);
         }
 
-        $profile = Profile::findOrFail($request->profileable_id);
+        $profile = Profile::find($request->profileable_id);
 
         $profile->update($request->only(
             [
@@ -85,21 +72,16 @@ class UserController extends Controller
             ]
         ));
 
-        return response()->json([
-            'status'  => true,
-            'message' => 'Profile Updated Successfully',
-        ]);
+        return $this->Success('Profile Updated Successfully');
     }
 
     public function delete($id)
     {
-        $profile = Profile::findOrFail($id);
+        $profile = Profile::find($id);
         if ($profile) {
             $profile->delete();
-            return response()->json([
-                'status'  => true,
-                'message' => 'Profile Deleted Successfully'
-            ]);
+            return $this->Success('Profile Deleted Successfully');
         }
+        return $this->DataNotFound();
     }
 }
