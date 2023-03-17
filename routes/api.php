@@ -8,10 +8,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\SongController;
 use App\Http\Controllers\StandardController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -134,4 +137,28 @@ Route::controller(ProductController::class)->prefix('product')->group(function (
     Route::get('get/{id}', 'get')->name('product.get');
     Route::put('update/{id}', 'update')->name('product.update');
     Route::delete('delete/{id}', 'delete')->name('product.delete');
+});
+
+Route::controller(VideoController::class)->prefix('video')->group(function () {
+    Route::get('list', 'list')->name('video.list');
+    Route::post('create', 'create')->name('video.create');
+    Route::get('get/{id}', 'get')->name('video.get');
+    Route::put('update/{id}', 'update')->name('video.update');
+    Route::delete('delete/{id}', 'delete')->name('video.delete');
+});
+
+Route::controller(SongController::class)->prefix('song')->group(function () {
+    Route::get('list', 'list')->name('song.list');
+    Route::post('create', 'create')->name('song.create');
+    Route::get('get/{id}', 'get')->name('song.get');
+    Route::put('update/{id}', 'update')->name('song.update');
+    Route::delete('delete/{id}', 'delete')->name('song.delete');
+});
+
+Route::controller(TagController::class)->prefix('tag')->group(function () {
+    Route::get('list', 'list')->name('tag.list');
+    Route::post('create', 'create')->name('tag.create');
+    Route::get('get/{id}', 'get')->name('tag.get');
+    Route::put('update/{id}', 'update')->name('tag.update');
+    Route::delete('delete/{id}', 'delete')->name('tag.delete');
 });
