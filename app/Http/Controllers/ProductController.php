@@ -64,14 +64,17 @@ class ProductController extends Controller
 
         $product = Product::find($id);
 
-        $product->update($request->only(
-            [
-                'product_name',
-                'price'
-            ]
-        ));
+        if ($product) {
+            $product->update($request->only(
+                [
+                    'product_name',
+                    'price'
+                ]
+            ));
 
-        return $this->Success('Product Updated Successfully');
+            return $this->Success('Product Updated Successfully');
+        }
+        return $this->DataNotFound();
     }
 
     public function delete($id)
